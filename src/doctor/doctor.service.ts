@@ -27,23 +27,18 @@ export class DoctorService {
       if(!especialidad){
         return new NotFoundException("No existe especialidad");
       }
-
       const usuario = await this.usuarioService.findOne( createDoctorDto.id_usuario );
-
-
       const doctorNuevo = this.doctorRepository.create({
         ...createDoctorDto,
         especialidad : especialidad,
         usuario : usuario
 
       });
-
       return this.doctorRepository.save(doctorNuevo);
   }
 
   async findAll() {
     let doctores = await this.doctorRepository.find({ relations : { especialidad : true , usuario : true } })
-
     return doctores.map( doctor => ({
       ...doctor,
       especialidad : doctor.especialidad,
@@ -88,16 +83,32 @@ export class DoctorService {
     if(updateDoctorDto.id_especialidad){
       const especialidad = await this.especialidadService.findOne(updateDoctorDto.id_especialidad);
       if(!especialidad){
-        return new NotFoundException("No existe rol");
+        return new NotFoundException("No existe especialidad");
       }
       doctor.especialidad.ID_especialidad = updateDoctorDto.id_especialidad;
     }
 
     await this.doctorRepository.save(doctor);
+
+    await this.usuarioService.changeEstado( updateDoctorDto.id_usuario , updateDoctorDto.es_activo )
+
     return await this.findOne(id);
   }
 
   async remove(id: string) {
     await this.doctorRepository.delete(id);
+  }
+
+  async getDoctoresPorEspecialidad(uuidEspecialidad:string){
+    let listDoctores =  await  this.doctorRepository.find(
+      { 
+       where : { especialidad : { ID_especialidad : uuidEspecialidad }  },
+       relations: {  especialidad : true , usuario: true }        
+     } );
+     if(listDoctores.length == 0){
+        return new NotFoundException('No existen doctores con esa especialidad')
+     }
+
+     return listDoctores;
   }
 }

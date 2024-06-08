@@ -1,7 +1,7 @@
 import { Doctor } from 'src/doctor/entities/doctor.entity';
 import { Paciente } from 'src/paciente/entities/paciente.entity';
 import { Rol } from 'src/rol/entities/rol.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn, ManyToOne, BeforeInsert } from 'typeorm';
 
 @Entity()
 export class Usuario {
@@ -20,7 +20,7 @@ export class Usuario {
   @Column()
   contrasenia: string;
 
-  @Column()
+  @Column({ nullable : true })
   celular: string;
 
   @Column({ default : false })
@@ -32,6 +32,10 @@ export class Usuario {
   @Column()
   tipo_documento: string;
 
+  
+  @Column({ default: true })
+  es_activo: boolean;
+
 
   @ManyToOne(() => Rol, rol => rol.usuarios)
   @JoinColumn({ name: 'ID_rol' })
@@ -42,4 +46,11 @@ export class Usuario {
 
   @OneToOne(() => Doctor, (doctor) => doctor.usuario)
   doctor: Doctor;
+
+  
+  @BeforeInsert()
+  generarEsActivo(){       
+          this.es_activo = true
+  }
 }
+

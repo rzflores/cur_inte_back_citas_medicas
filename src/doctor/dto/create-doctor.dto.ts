@@ -2,10 +2,10 @@ import { IsNumber, IsString, IsUUID } from "class-validator";
 
 export class CreateDoctorDto {
 
-    @IsNumber()
+    @IsNumber({},{message: "Años de exp: formato invalido"})
     anios_experiencia: number;
   
-    @IsString()
+    @IsString({ message : "Codigo colegio: formato invalido" })
     codigo_colegio : string;
 
     @IsUUID()

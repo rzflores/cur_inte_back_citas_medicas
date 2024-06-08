@@ -1,7 +1,7 @@
 import { Doctor } from 'src/doctor/entities/doctor.entity';
 import { Especialidad } from 'src/especialidad/entities/especialidad.entity';
 import { Reservacion } from 'src/reservacion/entities/reservacion.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, OneToOne, JoinColumn, BeforeInsert } from 'typeorm';
 
 @Entity()
 export class Consultorio {
@@ -9,13 +9,14 @@ export class Consultorio {
   ID_consultorio: string;
 
   @Column()
-  nombre_consultorio: string;
-
-  @Column()
   ubicacion: string;
 
   @Column({ default : false })
   es_eliminado: boolean;
+
+  @Column({ default: true })
+  es_activo: boolean;
+
 
   @OneToOne(() => Doctor, doctor => doctor.consultorio)
   @JoinColumn()
@@ -26,4 +27,9 @@ export class Consultorio {
 
   @OneToMany(() => Reservacion, (reservacion) => reservacion.consultorio)
   reservaciones: Reservacion[];
+
+  @BeforeInsert()
+  generarEsActivo(){       
+          this.es_activo = true
+  }
 }

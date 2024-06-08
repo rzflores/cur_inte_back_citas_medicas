@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, OneToOne, JoinColumn, BeforeInsert } from 'typeorm';
 import { Usuario } from 'src/usuario/entities/usuario.entity';
 import { Reservacion } from 'src/reservacion/entities/reservacion.entity';
 
@@ -29,5 +29,13 @@ export class Paciente {
   @Column({ default : false })
   es_eliminado: boolean;
 
+  @Column({ default: true })
+  es_activo: boolean;
+
   @OneToMany(() => Reservacion , (reservacion) => reservacion.paciente)  reservaciones: Reservacion[];
+
+  @BeforeInsert()
+  generarEsActivo(){       
+          this.es_activo = true
+  }
 }

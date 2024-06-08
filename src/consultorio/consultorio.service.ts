@@ -18,35 +18,62 @@ export class ConsultorioService {
   ){}
 
   async create(createConsultorioDto: CreateConsultorioDto) {
+    let consultorioUbicacionExiste = await this.consultorioRepository.exists({
+      where: { ubicacion : createConsultorioDto.ubicacion , es_eliminado : false }
+    })  
+    if(consultorioUbicacionExiste){
+      return new NotFoundException("Ubicacion ya existe");
+    }
 
-
-      const doctor = await this.doctorService.findOne(createConsultorioDto.id_doctor);
+    const doctor = await this.doctorService.findOne(createConsultorioDto.id_doctor);
       if(!doctor){
         return new NotFoundException("No existe doctor");
       }
-
       const especialidad = await this.especialidadService.findOne(doctor.especialidad.ID_especialidad);
       if(!especialidad){
         return new NotFoundException("No existe especialidad");
       }
 
-      
+    let consultorioDoctorExiste = await this.consultorioRepository.exists({
+      where: { 
+        doctor: { 
+          ID_doctor : createConsultorioDto.id_doctor , 
+          especialidad : { 
+            ID_especialidad :
+             createConsultorioDto.id_especialidad 
+            } 
+        },
+        es_eliminado : false   
+        } 
+    })
+    if(consultorioDoctorExiste){
+      return new NotFoundException("Doctor ya registrado en un consultorio");
+    }
 
+      
       const usuario = this.consultorioRepository.create({
         ...createConsultorioDto,
         especialidad : especialidad,
         doctor : doctor
       });
-
-
-
       const consultorioNuevo = await  this.consultorioRepository.save(usuario)
       return consultorioNuevo;
   }
 
   async findAll() {
 
-    let consultorios = await this.consultorioRepository.find({ relations : { especialidad : true , doctor: true } })
+    let consultorios = await this.consultorioRepository
+    .find(
+      { 
+        relations : { 
+          especialidad : true , 
+          doctor: { usuario : true },
+        },
+        where: {
+          es_eliminado : false
+        } 
+      }
+    )
 
     return consultorios.map( consultorio => ({
       ...consultorio,
@@ -74,29 +101,45 @@ export class ConsultorioService {
     if (!consultorio) {
       throw new NotFoundException('Usuario no encontrado');
     }
-    
-    Object.assign( consultorio , updateConsultorioDto);
 
-
-    if(updateConsultorioDto.id_doctor){
-      const doctor = await this.doctorService.findOne(updateConsultorioDto.id_doctor);
-      if(!doctor){
-        return new NotFoundException("No existe rol");
-      }
-      consultorio.doctor.ID_doctor = updateConsultorioDto.id_doctor;
-      const especialidad = await this.especialidadService.findOne(doctor.especialidad.ID_especialidad);
-      consultorio.especialidad.ID_especialidad = especialidad.ID_especialidad;
+    let consultorioDoctorExiste = await this.consultorioRepository.exists({
+      where: { 
+        doctor: { 
+          ID_doctor : updateConsultorioDto.id_doctor , 
+          especialidad : { 
+            ID_especialidad :
+            updateConsultorioDto.id_especialidad 
+            } 
+        },
+        es_eliminado : false   
+        } 
+    })
+    if(consultorioDoctorExiste){
+      return new NotFoundException("Doctor ya registrado en un consultorio");
     }
-    await this.consultorioRepository.save(consultorio);
-    return await this.findOne(id);
+
+
+
+      consultorio.ubicacion = updateConsultorioDto.ubicacion;
+      consultorio.es_activo = updateConsultorioDto.es_activo;
+      const doctor = await this.doctorService.findOne(updateConsultorioDto.id_doctor);
+      consultorio.doctor = doctor;
+      const especialidad = await this.especialidadService.findOne(updateConsultorioDto.id_especialidad);
+      consultorio.especialidad = especialidad;
+      console.log(consultorio.es_activo)
+      await this.consultorioRepository.save(consultorio);
+      return await this.findOne(id);
   }
 
   async remove(id: string) {
     const consultorio = await this.findOne(id);
     if (!consultorio) {
-      throw new NotFoundException('Usuario no encontrado');
+      throw new NotFoundException('Consultorio no encontrado');
     }
-
+    // consultorio.es_eliminado = true;
+    // await this.consultorioRepository.save( consultorio )
     await this.consultorioRepository.delete(id);
+
+    return true;
   }
 }

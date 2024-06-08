@@ -1,4 +1,5 @@
-import { IsEmail, IsNumber, IsPhoneNumber, IsString, IsStrongPassword, IsUUID, MinLength  } from "class-validator";
+import { IsEmail, IsNumber, IsOptional, IsPhoneNumber, IsString, IsStrongPassword, IsUUID, MinLength  } from "class-validator";
+import { v3 } from "uuid";
 
 export class CreateUsuarioDto {
     @IsString()
@@ -12,7 +13,8 @@ export class CreateUsuarioDto {
     email: string;
     @IsStrongPassword( { minUppercase : 1 ,  minLength : 6 , minSymbols : 1  } , { message : 'Contraseña: 1 letra mayúscula,mínimo 6 letras y un simbolo' })
     contrasenia: string;
-    @IsPhoneNumber("PE")
+    @IsOptional()
+    @IsPhoneNumber("PE" , { message: 'Celular: formato invalido' })
     @MinLength(9, { message: 'Celular: formato invalido' })
     celular: string;
     @IsUUID()
@@ -22,4 +24,18 @@ export class CreateUsuarioDto {
     numero_documento: string;
     @IsString()
     tipo_documento:string;
+    // ----------crear doctor
+    @IsOptional()
+    @IsNumber()
+    anios_experiencia: number;
+
+    @IsOptional()
+    @IsString()
+    codigo_colegio : string;
+
+    @IsOptional()
+    @IsUUID( "all",{ message: "Especialidad requerida" })
+    id_especialidad: string;
+    // ----------crear paciente
+
 }

@@ -15,7 +15,11 @@ export class EspecialidadService {
   }
 
   async create(createEspecialidadDto: CreateEspecialidadDto) {
-    const especialidad = await this.especialidadRepository.create(createEspecialidadDto);
+    let newEspecialidad : Especialidad = new Especialidad();
+    newEspecialidad.nombre_especialidad = createEspecialidadDto.nombre_especialidad;
+    newEspecialidad.precio_especialidad = parseFloat(createEspecialidadDto.precio_especialidad);
+
+    const especialidad = await this.especialidadRepository.create(newEspecialidad);
     return await this.especialidadRepository.save(especialidad);
   }
 
@@ -36,11 +40,17 @@ export class EspecialidadService {
     if (!especialidad) {
       throw new NotFoundException('Especialidad no encontrada');
     }
-    await this.especialidadRepository.update(id, updateEspecialidadDto);
+    let editEspecialidad : Especialidad = new Especialidad();
+    editEspecialidad.nombre_especialidad = updateEspecialidadDto.nombre_especialidad;
+    editEspecialidad.precio_especialidad = parseFloat(updateEspecialidadDto.precio_especialidad);
+    editEspecialidad.es_activo = updateEspecialidadDto.es_activo;
+
+    await this.especialidadRepository.update(id, editEspecialidad);
     return await this.findOne(id);
   }
 
   async remove(id: string) {
     await this.especialidadRepository.delete(id);
+    return true;
   }
 }

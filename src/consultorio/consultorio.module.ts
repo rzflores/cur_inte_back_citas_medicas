@@ -17,6 +17,7 @@ import { DoctorModule } from 'src/doctor/doctor.module';
     ]),
     EspecialidadModule,
     DoctorModule
-  ]
+  ],
+  exports: [ ConsultorioService , TypeOrmModule ]
 })
 export class ConsultorioModule {}

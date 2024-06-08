@@ -17,7 +17,7 @@ import { ConsultorioModule } from 'src/consultorio/consultorio.module';
     PacienteModule,
     DoctorModule,
     ConsultorioModule
-
+    
   ]
 })
 export class ReservacionModule {}

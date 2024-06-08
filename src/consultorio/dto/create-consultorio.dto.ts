@@ -1,10 +1,10 @@
 import { IsString, IsUUID } from "class-validator";
 
 export class CreateConsultorioDto {
-  @IsString()  
-  nombre_consultorio: string;
-  @IsString()
+  @IsString({ message: "Ubicacion: es obligatorio" })
   ubicacion: string;
-  @IsUUID()
+  @IsUUID('all',{ message : "Doctor es obligatorio"})
   id_doctor: string;
+  @IsUUID('all',{ message: "Especialidad es obligatorio" })
+  id_especialidad: string;
 }

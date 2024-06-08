@@ -31,4 +31,9 @@ export class DoctorController {
   remove(@Param('id') id: string) {
     return this.doctorService.remove(id);
   }
+
+  @Post( 'especialidad/:idEspecialidad')
+  findDoctorPorEspecialidad(@Param('idEspecialidad') id: string) {
+    return this.doctorService.getDoctoresPorEspecialidad(id);
+  }
 }

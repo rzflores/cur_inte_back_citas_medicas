@@ -60,9 +60,9 @@ constructor(
         case "Doctor":            
           // crear un doctor
           const nuevoDoctor : CreateDoctorDto = {
-            anios_experiencia : 0,
-            codigo_colegio : "",
-            id_especialidad : "dc9eb649-4d62-4bfb-bf3f-1c47e6ce1c0b",
+            anios_experiencia : createUsuarioDto.anios_experiencia ?? 0,
+            codigo_colegio : createUsuarioDto.codigo_colegio ?? "",
+            id_especialidad : createUsuarioDto.id_especialidad ?? "dc9eb649-4d62-4bfb-bf3f-1c47e6ce1c0b",
             id_usuario : usuarioNuevo.ID_usuario
           }
           await this.doctorService.create( nuevoDoctor )
@@ -76,7 +76,7 @@ constructor(
 
   async findAll() {
 
-    let usuarios = await this.usuarioRepository.find({ relations : { rol : true } })
+    let usuarios = await this.usuarioRepository.find({ where : { es_eliminado: false } , relations : { rol : true } })
 
     return usuarios.map( usuario => ({
       ...usuario,
@@ -89,7 +89,7 @@ constructor(
     const usuario = await this.usuarioRepository.findOne(
      { 
       where : { ID_usuario : id  }, 
-      relations : { rol : true }
+      relations : { rol : true , doctor : true , paciente : true }
     } );
 
     if (!usuario) {
@@ -103,17 +103,56 @@ constructor(
     if (!usuario) {
       throw new NotFoundException('Usuario no encontrado');
     }
-    
-    Object.assign( usuario , updateUsuarioDto);
-
 
     if(updateUsuarioDto.id_rol){
       const rol = await this.rolService.findOne(updateUsuarioDto.id_rol);
       if(!rol){
         return new NotFoundException("No existe rol");
       }
-      usuario.rol.ID_rol = updateUsuarioDto.id_rol;
+      if(usuario.rol.ID_rol != updateUsuarioDto.id_rol){
+          
+          // si cambia de doctor a paciente o viceversa
+          switch(rol.nombre){
+            case "Administrador" :
+                await this.pacienteService.remove(usuario.paciente.ID_paciente) 
+                await this.doctorService.remove( usuario.doctor.ID_doctor )
+            break;
+            case "Paciente" : 
+              if(usuario.doctor != null){
+                await this.doctorService.remove( usuario.doctor.ID_doctor )
+              }
+              if(usuario.paciente == null) {
+                let pacienteDto : CreatePacienteDto = {
+                  fecha_nacimiento : null,
+                  id_usuario : id,
+                  celular_contacto_emergencia : null,
+                  contacto_emergencia : "",
+                  direccion: "",
+                  historial_medico : ""
+                }
+                await this.pacienteService.create(pacienteDto) 
+              }
+            break;
+            case "Doctor":  
+              if(usuario.paciente != null) {
+                await this.pacienteService.remove(usuario.paciente.ID_paciente) 
+              }   
+              if(usuario.doctor == null) {
+                let doctorDto : CreateDoctorDto = {
+                  id_usuario : id,
+                  anios_experiencia : 0,
+                  codigo_colegio: "",
+                  id_especialidad: "dc9eb649-4d62-4bfb-bf3f-1c47e6ce1c0b"
+                }
+                await this.doctorService.create(doctorDto) 
+              }       
+            break;
+          }
+          Object.assign( usuario , updateUsuarioDto);
+          usuario.rol.ID_rol = updateUsuarioDto.id_rol; 
+      }
     }
+
 
     await this.usuarioRepository.save(usuario);
     return await this.findOne(id);
@@ -125,22 +164,18 @@ constructor(
     if (!usuario) {
       throw new NotFoundException('Usuario no encontrado');
     }
-    console.log(usuario)
     switch(usuario.rol.nombre){
       case "Paciente" : 
-        // eliminar paciente
-        let pacienteEliminar = await this.pacienteService.findOneIdUsuario(usuario.ID_usuario)
-        await this.pacienteService.remove( pacienteEliminar.ID_paciente )
+        await this.pacienteService.remove( usuario.paciente.ID_paciente )
       break;
       case "Doctor":            
-        // eliminar doctor
-        let doctorEliminar = await this.doctorService.findOneIdUsuario(usuario.ID_usuario)
-        await this.doctorService.remove( doctorEliminar.ID_doctor )
+        await this.doctorService.remove( usuario.doctor.ID_doctor )
       break;
     }
 
-
-    await this.usuarioRepository.delete(id);
+    usuario.es_eliminado = true;
+    await this.usuarioRepository.save( usuario )
+    return true; 
   }
   async findTermino(numdoc:string = '', email:string = ''){
     const usuarioBuscado = await this.usuarioRepository
@@ -156,6 +191,12 @@ constructor(
         return false;
       }
 
+  }
+
+  async changeEstado( uuidUsuario : string , nuevoEstado : boolean ){
+    const usuario = await this.findOne(uuidUsuario);
+    usuario.es_activo = nuevoEstado,
+    await this.usuarioRepository.save( usuario )
   }
 
 }

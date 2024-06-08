@@ -51,13 +51,11 @@ export class PacienteService {
   }
 
   async findOneIdUsuario(idUsuario: string) {
-    console.log(idUsuario)
     const paciente = await this.pacienteRepository.findOne(
       { 
        where : { usuario : { ID_usuario : idUsuario }   },        
      });
 
-     console.log(paciente)
  
      if (!paciente) {
        throw new NotFoundException('Paciente no encontrado');

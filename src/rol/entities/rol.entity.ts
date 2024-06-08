@@ -9,6 +9,9 @@ export class Rol {
   @Column()
   nombre: string;
 
+  @Column()
+  descripcion: string;
+
   @Column({ default : false })
   es_eliminado: boolean;
 
