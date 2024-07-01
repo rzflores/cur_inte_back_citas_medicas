@@ -17,7 +17,7 @@ async function bootstrap() {
   )
   // Configuración de opciones CORS
   const corsOptions: CorsOptions = {
-    origin:  process.env.APP_URL_FRONT, // Permite solicitudes desde este origen
+    origin:  true, // Permite solicitudes desde este origen
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   };
@@ -26,6 +26,6 @@ async function bootstrap() {
   app.enableCors(corsOptions);
 
   await app.listen(process.env.APP_PORT);
-  logger.log('proyecto iniciado')
+  logger.log('proyecto iniciado en el puerto:' + process.env.APP_PORT)
 }
 bootstrap();
