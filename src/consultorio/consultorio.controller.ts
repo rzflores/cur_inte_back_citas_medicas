@@ -22,6 +22,12 @@ export class ConsultorioController {
     return this.consultorioService.findOne(id);
   }
 
+  @Post('doctor/:id')
+  findConsultorioPorDoctor(@Param('id') id: string) {
+    return this.consultorioService.findConsultorioPorDoctor(id);
+  }
+
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateConsultorioDto: UpdateConsultorioDto) {
     return this.consultorioService.update(id, updateConsultorioDto);

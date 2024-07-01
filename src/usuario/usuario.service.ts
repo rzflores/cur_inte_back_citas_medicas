@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException, forwardRef } from '@nestjs/common';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { Usuario } from './entities/usuario.entity';
@@ -10,10 +10,13 @@ import { CreateDoctorDto } from 'src/doctor/dto/create-doctor.dto';
 import { PacienteService } from 'src/paciente/paciente.service';
 import { CreatePacienteDto } from 'src/paciente/dto/create-paciente.dto';
 import { EncryptionPassword } from 'src/seguridad/helpers/encryption.helpers';
+import { MailService } from 'src/mail/mail.service';
+import { RegistrarPacienteDto } from 'src/mail/dto/create-mail.dto';
 
 @Injectable()
 export class UsuarioService {
 
+private readonly logger = new Logger(UsuarioService.name);
 constructor(
   @InjectRepository(Usuario)
   private readonly usuarioRepository : Repository<Usuario>,
@@ -22,7 +25,8 @@ constructor(
   private readonly doctorService : DoctorService,
   @Inject(forwardRef(() => PacienteService))
   private readonly pacienteService : PacienteService,
-  private readonly encryptionService: EncryptionPassword
+  private readonly encryptionService: EncryptionPassword,
+  private readonly mailService : MailService
 
 ) {
   
@@ -56,6 +60,13 @@ constructor(
             id_usuario : usuarioNuevo.ID_usuario
           }
           await this.pacienteService.create( nuevoPaciente )
+          let dtoRegistroPaciente : RegistrarPacienteDto = {
+            nombreCompleto : `${createUsuarioDto.nombre} ${createUsuarioDto.apellido}`,
+            correo : createUsuarioDto.email,
+            contrasenia : createUsuarioDto.contrasenia 
+          }
+          this.logger.log(`Envio de correo a ${dtoRegistroPaciente.nombreCompleto}`);
+          await this.mailService.registroPaciente( dtoRegistroPaciente )
         break;
         case "Doctor":            
           // crear un doctor
@@ -148,9 +159,12 @@ constructor(
               }       
             break;
           }
-          Object.assign( usuario , updateUsuarioDto);
+         
           usuario.rol.ID_rol = updateUsuarioDto.id_rol; 
       }
+
+      Object.assign( usuario , updateUsuarioDto);
+      usuario.es_activo = updateUsuarioDto.es_activo;
     }
 
 

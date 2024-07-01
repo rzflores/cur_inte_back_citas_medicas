@@ -96,6 +96,20 @@ export class ConsultorioService {
      return consultorio;
   }
 
+
+  async findConsultorioPorDoctor(idDoctor: string) {
+    const consultorio = await this.consultorioRepository.findOne(
+      { 
+       where : { doctor : { ID_doctor : idDoctor }  }, 
+       relations : { especialidad : true , doctor: true }
+     } );
+ 
+     if (!consultorio) {
+       throw new NotFoundException('No se encontro un consultorio');
+     }
+     return consultorio;
+  }
+
   async update(id: string, updateConsultorioDto: UpdateConsultorioDto) {
     const consultorio = await this.findOne(id);
     if (!consultorio) {

@@ -7,6 +7,7 @@ import { Usuario } from './entities/usuario.entity';
 import { DoctorModule } from 'src/doctor/doctor.module';
 import { PacienteModule } from '../paciente/paciente.module';
 import { SeguridadModule } from '../seguridad/seguridad.module';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   controllers: [UsuarioController],
@@ -16,6 +17,7 @@ import { SeguridadModule } from '../seguridad/seguridad.module';
       Usuario,
     ]),
     RolModule ,
+    MailModule,
     forwardRef( () => DoctorModule),
     forwardRef( () => PacienteModule),
     forwardRef( () => SeguridadModule),

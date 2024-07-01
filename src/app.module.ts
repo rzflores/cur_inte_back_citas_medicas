@@ -16,10 +16,13 @@ import { Reservacion } from './reservacion/entities/reservacion.entity';
 import { RolModule } from './rol/rol.module';
 import { Rol } from './rol/entities/rol.entity';
 import { SeguridadModule } from './seguridad/seguridad.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST,
@@ -39,6 +42,7 @@ import { SeguridadModule } from './seguridad/seguridad.module';
     ReservacionModule,
     RolModule,
     SeguridadModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],

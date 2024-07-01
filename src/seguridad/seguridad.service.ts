@@ -29,6 +29,9 @@ export class SeguridadService {
       if( !await this.encryptionService.compararContrasenia( loginDto.contrasenia , loginUsuario.contrasenia ) ){
         return new NotFoundException('Usuario y/o contraseña invalida');
       }
+      if(loginUsuario.es_activo == false){
+        return new NotFoundException('Usuario  deshabilitado. Contacte con el Administrador.');
+      }
       return loginUsuario;
     
   }
