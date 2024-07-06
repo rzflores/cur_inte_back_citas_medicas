@@ -17,6 +17,12 @@ export class ReservacionController {
     return this.reservacionService.findAll();
   }
 
+  @Post('/filter/:id')
+  findAllFilter(@Param('id') id: string) {
+    return this.reservacionService.findAllFilter(id);
+  }
+
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.reservacionService.findOne(+id);

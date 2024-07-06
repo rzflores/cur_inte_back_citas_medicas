@@ -46,7 +46,20 @@ export class ReservacionService {
   }
 
   async findAll() {
-    return this.reservacionRepository.find( { relations : { consultorio : true , doctor : true , paciente : true } } )
+    return this.reservacionRepository.find( { relations : { consultorio : true , doctor : true , paciente : { usuario : true } , disponibilidad : true } } )
+  }
+
+  async findAllFilter( uuid : string) {
+    if(uuid === "all"){
+      return this.reservacionRepository.find( { relations : { consultorio : true , doctor : true , paciente : { usuario : true } , disponibilidad : true } } )
+    }else{
+      return this.reservacionRepository.find( 
+                { 
+                  relations : { consultorio : true , doctor : true , paciente : { usuario : true } , disponibilidad : true }, 
+                  where : { doctor: { usuario : { ID_usuario : uuid } } }
+                })
+    }
+
   }
 
   async findOne(id: number) {
