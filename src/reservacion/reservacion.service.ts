@@ -51,11 +51,11 @@ export class ReservacionService {
 
   async findAllFilter( uuid : string) {
     if(uuid === "all"){
-      return this.reservacionRepository.find( { relations : { consultorio : true , doctor : true , paciente : { usuario : true } , disponibilidad : true } } )
+      return this.reservacionRepository.find( { relations : { consultorio : true , doctor :  { usuario : true } , paciente : { usuario : true } , disponibilidad : true } } )
     }else{
       return this.reservacionRepository.find( 
                 { 
-                  relations : { consultorio : true , doctor : true , paciente : { usuario : true } , disponibilidad : true }, 
+                  relations : { consultorio : true , doctor : { usuario : true } , paciente : { usuario : true } , disponibilidad : true }, 
                   where : { doctor: { usuario : { ID_usuario : uuid } } }
                 })
     }
