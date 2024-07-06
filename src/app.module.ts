@@ -17,6 +17,8 @@ import { RolModule } from './rol/rol.module';
 import { Rol } from './rol/entities/rol.entity';
 import { SeguridadModule } from './seguridad/seguridad.module';
 import { MailModule } from './mail/mail.module';
+import { DisponibilidadModule } from './disponibilidad/disponibilidad.module';
+import { Disponibilidad } from './disponibilidad/entities/disponibilidad.entity';
 
 @Module({
   imports: [
@@ -32,7 +34,16 @@ import { MailModule } from './mail/mail.module';
       password: process.env.DB_PASS,
       autoLoadEntities: true,
       synchronize: true,
-      entities : [ Usuario , Especialidad , Consultorio , Doctor , Paciente , Reservacion , Rol ]
+      entities : [ 
+                    Usuario , 
+                    Especialidad , 
+                    Consultorio ,
+                    Doctor , 
+                    Paciente , 
+                    Reservacion , 
+                    Rol ,
+                    Disponibilidad
+                  ]
     }),
     UsuarioModule,
     EspecialidadModule,
@@ -43,6 +54,7 @@ import { MailModule } from './mail/mail.module';
     RolModule,
     SeguridadModule,
     MailModule,
+    DisponibilidadModule,
   ],
   controllers: [],
   providers: [],

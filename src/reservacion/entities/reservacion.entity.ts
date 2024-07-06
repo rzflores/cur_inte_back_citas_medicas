@@ -1,7 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Paciente } from 'src/paciente/entities/paciente.entity';
 import { Doctor } from 'src/doctor/entities/doctor.entity';
 import { Consultorio } from 'src/consultorio/entities/consultorio.entity';
+import { Disponibilidad } from 'src/disponibilidad/entities/disponibilidad.entity';
+import { DisponibilidadController } from '../../disponibilidad/disponibilidad.controller';
 
 @Entity()
 export class Reservacion {
@@ -17,15 +19,19 @@ export class Reservacion {
   @ManyToOne(() => Consultorio, (consultorio) => consultorio.reservaciones)
   consultorio: Consultorio;
 
-  @Column()
-  fecha_hora: Date;
+  @ManyToOne(() => Disponibilidad, reservacion => reservacion.reservaciones)
+  @JoinColumn({ name: 'ID_disponibilidad' })
+  disponibilidad: Disponibilidad;
+
+  @Column({ type: 'date' })
+  fecha: string;
 
   @Column({ default : false })
   es_eliminado: boolean;
 
-  @Column({
-    type: 'enum',
-    enum: ['pendiente', 'confirmada', 'cancelada'],
-  })
-  estado: 'pendiente' | 'confirmada' | 'cancelada';
+  // @Column({
+  //   type: 'enum',
+  //   enum: ['pendiente', 'confirmada', 'cancelada'],
+  // })
+  // estado: 'pendiente' | 'confirmada' | 'cancelada';
 }

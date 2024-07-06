@@ -74,7 +74,8 @@ constructor(
             anios_experiencia : createUsuarioDto.anios_experiencia ?? 0,
             codigo_colegio : createUsuarioDto.codigo_colegio ?? "",
             id_especialidad : createUsuarioDto.id_especialidad ?? "dc9eb649-4d62-4bfb-bf3f-1c47e6ce1c0b",
-            id_usuario : usuarioNuevo.ID_usuario
+            id_usuario : usuarioNuevo.ID_usuario ,
+            ids_disponibilidad : ""
           }
           await this.doctorService.create( nuevoDoctor )
         break;
@@ -153,7 +154,8 @@ constructor(
                   id_usuario : id,
                   anios_experiencia : 0,
                   codigo_colegio: "",
-                  id_especialidad: "dc9eb649-4d62-4bfb-bf3f-1c47e6ce1c0b"
+                  id_especialidad: "dc9eb649-4d62-4bfb-bf3f-1c47e6ce1c0b",
+                  ids_disponibilidad : ""
                 }
                 await this.doctorService.create(doctorDto) 
               }       

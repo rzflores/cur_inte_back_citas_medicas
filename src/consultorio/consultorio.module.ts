@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ConsultorioService } from './consultorio.service';
 import { ConsultorioController } from './consultorio.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -16,7 +16,8 @@ import { DoctorModule } from 'src/doctor/doctor.module';
       Consultorio
     ]),
     EspecialidadModule,
-    DoctorModule
+    forwardRef( () => DoctorModule )
+    
   ],
   exports: [ ConsultorioService , TypeOrmModule ]
 })

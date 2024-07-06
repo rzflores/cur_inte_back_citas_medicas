@@ -45,7 +45,7 @@ export class PacienteService {
      } );
  
      if (!paciente) {
-       throw new NotFoundException('Doctor no encontrado');
+       throw new NotFoundException('Paciente no encontrado');
      }
      return paciente;
   }

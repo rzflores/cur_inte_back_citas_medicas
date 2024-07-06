@@ -10,7 +10,10 @@ export class CreateReservacionDto {
     @IsUUID('all',{message:"Paciente es obligatorio"})
     id_consultorio: string;
     
+    @IsUUID('all',{message:"Paciente es obligatorio"})
+    id_disponibilidad: string;
+
     @IsString()
-    fecha_hora: string;
+    fecha: string;
     
 }

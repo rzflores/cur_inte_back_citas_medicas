@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateConsultorioDto } from './dto/create-consultorio.dto';
 import { UpdateConsultorioDto } from './dto/update-consultorio.dto';
 import { Consultorio } from './entities/consultorio.entity';
@@ -13,6 +13,8 @@ export class ConsultorioService {
     @InjectRepository(Consultorio)
     private readonly consultorioRepository : Repository<Consultorio>,
     private readonly especialidadService : EspecialidadService,
+    
+    @Inject(forwardRef(() => DoctorService))
     private readonly doctorService : DoctorService,
 
   ){}
@@ -89,9 +91,8 @@ export class ConsultorioService {
        where : { ID_consultorio : id  }, 
        relations : { especialidad : true , doctor: true }
      } );
- 
      if (!consultorio) {
-       throw new NotFoundException('Usuario no encontrado');
+       throw new NotFoundException('Consultorio no encontrado');
      }
      return consultorio;
   }

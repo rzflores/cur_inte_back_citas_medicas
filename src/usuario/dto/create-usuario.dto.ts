@@ -1,4 +1,4 @@
-import { IsEmail, IsNumber, IsOptional, IsPhoneNumber, IsString, IsStrongPassword, IsUUID, MinLength  } from "class-validator";
+import { IsEmail, IsEmpty, IsNumber, IsOptional, IsPhoneNumber, IsString, IsStrongPassword, IsUUID, MinLength  } from "class-validator";
 import { v3 } from "uuid";
 
 export class CreateUsuarioDto {

@@ -5,6 +5,8 @@ import { EspecialidadModule } from 'src/especialidad/especialidad.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Doctor } from './entities/doctor.entity';
 import { UsuarioModule } from 'src/usuario/usuario.module';
+import { DisponibilidadModule } from 'src/disponibilidad/disponibilidad.module';
+import { ReservacionModule } from 'src/reservacion/reservacion.module';
 
 @Module({
   controllers: [DoctorController],
@@ -13,8 +15,12 @@ import { UsuarioModule } from 'src/usuario/usuario.module';
     TypeOrmModule.forFeature([
     Doctor,
     ]),
+    
     EspecialidadModule ,  
-     forwardRef( () => UsuarioModule ),
+    DisponibilidadModule,
+    forwardRef( () => UsuarioModule ),
+    forwardRef( () => ReservacionModule ),
+    
  ],
  exports: [ DoctorService , TypeOrmModule ]
 })

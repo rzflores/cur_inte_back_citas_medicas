@@ -7,6 +7,9 @@ import { Repository } from 'typeorm';
 import { RolService } from 'src/rol/rol.service';
 import { EspecialidadService } from 'src/especialidad/especialidad.service';
 import { UsuarioService } from 'src/usuario/usuario.service';
+import { DisponibilidadService } from 'src/disponibilidad/disponibilidad.service';
+import { Disponibilidad } from 'src/disponibilidad/entities/disponibilidad.entity';
+import { ReservacionService } from 'src/reservacion/reservacion.service';
 
 @Injectable()
 export class DoctorService {
@@ -14,9 +17,16 @@ export class DoctorService {
   constructor(
     @InjectRepository(Doctor)
     private readonly doctorRepository : Repository<Doctor>,
+
     private readonly especialidadService : EspecialidadService,
+    private readonly disponibilidadService : DisponibilidadService,
+
+
     @Inject(forwardRef(() => UsuarioService))
     private readonly usuarioService : UsuarioService,
+    @Inject(forwardRef(() => ReservacionService))
+    private readonly reservacionService : ReservacionService,
+   
   ) {
     
   }
@@ -32,7 +42,6 @@ export class DoctorService {
         ...createDoctorDto,
         especialidad : especialidad,
         usuario : usuario
-
       });
       return this.doctorRepository.save(doctorNuevo);
   }
@@ -87,6 +96,36 @@ export class DoctorService {
       }
       doctor.especialidad.ID_especialidad = updateDoctorDto.id_especialidad;
     }
+
+    //generamos sus disponibilidades
+    if(updateDoctorDto.ids_disponibilidad.length > 0){
+
+        const idsArray = updateDoctorDto.ids_disponibilidad.split(',');
+
+        //validar si no envia una disponibilidad que esta marcada como reservacion
+        let reservacionesDoctor = await this.reservacionService.findReservacionPorDoctor(doctor.ID_doctor);
+        if(reservacionesDoctor.length > 0){
+          let idsDispoReser = reservacionesDoctor.map( item => 
+            item.disponibilidad.ID_disponibilidad         
+          )
+          console.log(idsDispoReser);
+          let resulExist = idsArray.some( item => idsDispoReser.includes( item ) )
+          console.log(resulExist)
+          if(!resulExist){
+              return new NotFoundException("Error: Existe una reservacion asociada a una disponibilidad no seleccionada");
+          }
+
+        }
+      
+
+      //grabar nuevas disponibilidades
+      let disponibilidades : Disponibilidad[] =  await this.disponibilidadService.findByMultipleIds(idsArray);
+      doctor.disponibilidades = [];
+      doctor.disponibilidades = disponibilidades;
+
+    }
+
+
 
     await this.doctorRepository.save(doctor);
 

@@ -1,4 +1,4 @@
-import { IsNumber, IsString, IsUUID } from "class-validator";
+import { IsEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class CreateDoctorDto {
 
@@ -13,4 +13,8 @@ export class CreateDoctorDto {
 
     @IsUUID()
     id_usuario: string;
+
+    @IsString()
+    @IsOptional()
+    ids_disponibilidad : string = ""
 }
