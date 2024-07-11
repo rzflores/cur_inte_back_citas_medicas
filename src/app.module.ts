@@ -19,6 +19,8 @@ import { SeguridadModule } from './seguridad/seguridad.module';
 import { MailModule } from './mail/mail.module';
 import { DisponibilidadModule } from './disponibilidad/disponibilidad.module';
 import { Disponibilidad } from './disponibilidad/entities/disponibilidad.entity';
+import { EmfermeraModule } from './emfermera/emfermera.module';
+import { Emfermera } from './emfermera/entities/emfermera.entity';
 
 @Module({
   imports: [
@@ -42,7 +44,8 @@ import { Disponibilidad } from './disponibilidad/entities/disponibilidad.entity'
                     Paciente , 
                     Reservacion , 
                     Rol ,
-                    Disponibilidad
+                    Disponibilidad,
+                    Emfermera
                   ]
     }),
     UsuarioModule,
@@ -55,6 +58,7 @@ import { Disponibilidad } from './disponibilidad/entities/disponibilidad.entity'
     SeguridadModule,
     MailModule,
     DisponibilidadModule,
+    EmfermeraModule,
   ],
   controllers: [],
   providers: [],

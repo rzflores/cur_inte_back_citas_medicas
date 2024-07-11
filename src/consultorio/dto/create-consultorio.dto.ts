@@ -7,4 +7,6 @@ export class CreateConsultorioDto {
   id_doctor: string;
   @IsUUID('all',{ message: "Especialidad es obligatorio" })
   id_especialidad: string;
+  @IsUUID()
+  id_emfermera: string
 }

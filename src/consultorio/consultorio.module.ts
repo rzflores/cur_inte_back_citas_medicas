@@ -7,6 +7,7 @@ import { EspecialidadService } from 'src/especialidad/especialidad.service';
 import { DoctorService } from 'src/doctor/doctor.service';
 import { EspecialidadModule } from 'src/especialidad/especialidad.module';
 import { DoctorModule } from 'src/doctor/doctor.module';
+import { EmfermeraModule } from 'src/emfermera/emfermera.module';
 
 @Module({
   controllers: [ConsultorioController],
@@ -16,6 +17,7 @@ import { DoctorModule } from 'src/doctor/doctor.module';
       Consultorio
     ]),
     EspecialidadModule,
+    EmfermeraModule,
     forwardRef( () => DoctorModule )
     
   ],

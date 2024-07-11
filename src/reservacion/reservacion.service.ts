@@ -8,6 +8,7 @@ import { ConsultorioService } from 'src/consultorio/consultorio.service';
 import { PacienteService } from 'src/paciente/paciente.service';
 import { DisponibilidadService } from 'src/disponibilidad/disponibilidad.service';
 import { DoctorService } from 'src/doctor/doctor.service';
+import { Usuario } from 'src/usuario/entities/usuario.entity';
 
 @Injectable()
 export class ReservacionService {
@@ -38,7 +39,6 @@ export class ReservacionService {
     newRerservacion.paciente = paciente;
     newRerservacion.doctor = consultorio.doctor;
     newRerservacion.disponibilidad = disponibilidad;
-    // newRerservacion.estado = 'pendiente';
     newRerservacion.fecha =createReservacionDto.fecha;
 
     const reservacionGrabar = await this.reservacionRepository.create(newRerservacion);
@@ -62,12 +62,17 @@ export class ReservacionService {
 
   }
 
-  async findOne(id: number) {
-    
+  async findOne(id: string) {
+    return this.reservacionRepository.findOne( { where : {  ID_reservacion : id } } )
   }
 
   async findReservacionPorDoctor(idDoctor: string) {
     return this.reservacionRepository.find( { where: { doctor : { ID_doctor : idDoctor } }  , relations: { disponibilidad: true } } )
+  }
+
+  async findReservacionPorPaciente(idPaciente: string) {
+    return this.reservacionRepository.find( { where: { paciente : { ID_paciente : idPaciente } }  , 
+                                              relations: { disponibilidad: true , paciente : {  usuario : true  } , doctor : { especialidad: true , usuario : true } } } )
   }
 
 
@@ -78,6 +83,13 @@ export class ReservacionService {
   async update(id: number, updateReservacionDto: UpdateReservacionDto) {
     
   }
+
+  async updateState(id: string) {
+    let reservacion = await this.findOne(id);
+    reservacion.estado = 1;
+    await this.reservacionRepository.save(reservacion)  
+  }
+
 
   async remove(id: number) {
     await this.reservacionRepository.delete(id);

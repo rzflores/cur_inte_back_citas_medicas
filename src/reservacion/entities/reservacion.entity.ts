@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, BeforeInsert } from 'typeorm';
 import { Paciente } from 'src/paciente/entities/paciente.entity';
 import { Doctor } from 'src/doctor/entities/doctor.entity';
 import { Consultorio } from 'src/consultorio/entities/consultorio.entity';
@@ -29,9 +29,13 @@ export class Reservacion {
   @Column({ default : false })
   es_eliminado: boolean;
 
-  // @Column({
-  //   type: 'enum',
-  //   enum: ['pendiente', 'confirmada', 'cancelada'],
-  // })
-  // estado: 'pendiente' | 'confirmada' | 'cancelada';
+  //0 pendiente y 1 culminada
+  @Column() 
+  estado: number;
+
+  @BeforeInsert()
+  generarPendiente(){       
+          this.estado = 0
+  }
+
 }

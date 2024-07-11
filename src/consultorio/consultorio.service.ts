@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EspecialidadService } from 'src/especialidad/especialidad.service';
 import { DoctorService } from 'src/doctor/doctor.service';
+import { EmfermeraService } from '../emfermera/emfermera.service';
 
 @Injectable()
 export class ConsultorioService {
@@ -13,7 +14,7 @@ export class ConsultorioService {
     @InjectRepository(Consultorio)
     private readonly consultorioRepository : Repository<Consultorio>,
     private readonly especialidadService : EspecialidadService,
-    
+    private readonly emfermeraService : EmfermeraService,
     @Inject(forwardRef(() => DoctorService))
     private readonly doctorService : DoctorService,
 
@@ -25,6 +26,12 @@ export class ConsultorioService {
     })  
     if(consultorioUbicacionExiste){
       return new NotFoundException("Ubicacion ya existe");
+    }
+
+    const emfermera = await this.emfermeraService.findOne(createConsultorioDto.id_emfermera);
+
+    if(!emfermera){
+      return new NotFoundException("No existe emfermera");
     }
 
     const doctor = await this.doctorService.findOne(createConsultorioDto.id_doctor);
@@ -56,8 +63,13 @@ export class ConsultorioService {
       const usuario = this.consultorioRepository.create({
         ...createConsultorioDto,
         especialidad : especialidad,
-        doctor : doctor
+        doctor : doctor,
+        emfermera : emfermera
       });
+
+
+
+
       const consultorioNuevo = await  this.consultorioRepository.save(usuario)
       return consultorioNuevo;
   }
@@ -70,6 +82,7 @@ export class ConsultorioService {
         relations : { 
           especialidad : true , 
           doctor: { usuario : true },
+          emfermera : true
         },
         where: {
           es_eliminado : false
@@ -89,7 +102,7 @@ export class ConsultorioService {
     const consultorio = await this.consultorioRepository.findOne(
       { 
        where : { ID_consultorio : id  }, 
-       relations : { especialidad : true , doctor: true }
+       relations : { especialidad : true , doctor: true , emfermera : true }
      } );
      if (!consultorio) {
        throw new NotFoundException('Consultorio no encontrado');

@@ -22,10 +22,20 @@ export class ReservacionController {
     return this.reservacionService.findAllFilter(id);
   }
 
+  @Post('/paciente/:id')
+  findAllReservacionPorDoctorlFilter(@Param('id') id: string) {
+    return this.reservacionService.findReservacionPorPaciente(id);
+  }
+
+  @Post('/changeState/:id')
+  changeStateReservacion(@Param('id') id: string) {
+    return this.reservacionService.updateState(id);
+  }
+
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.reservacionService.findOne(+id);
+    return this.reservacionService.findOne(id);
   }
 
   @Patch(':id')
